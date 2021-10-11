@@ -1,5 +1,5 @@
 {
-  "name": "glhd/laravel-package-template",
+  "name": "glhd/suspend",
   "description": "",
   "keywords": [
     "laravel"
@@ -25,7 +25,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Glhd\\LaravelPackageTemplate\\": "src/"
+      "Glhd\\Suspend\\": "src/"
     }
   },
   "autoload-dev": {
@@ -33,7 +33,7 @@
       "tests/TestCase.php"
     ],
     "psr-4": {
-      "Glhd\\LaravelPackageTemplate\\Tests\\": "tests/"
+      "Glhd\\Suspend\\Tests\\": "tests/"
     }
   },
   "minimum-stability": "stable",
@@ -48,10 +48,10 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Glhd\\LaravelPackageTemplate\\Support\\PackageServiceProvider"
+        "Glhd\\Suspend\\Support\\PackageServiceProvider"
       ],
       "aliases": {
-        "Gretel": "Glhd\\LaravelPackageTemplate\\Support\\Facades\\Package"
+        "Gretel": "Glhd\\Suspend\\Support\\Facades\\Package"
       }
     }
   }
