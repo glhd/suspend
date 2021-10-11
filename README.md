@@ -31,11 +31,20 @@
     </a>
 </div>
 
-# suspend
+# Suspend
 
-Please replace `glhd/suspend` with the package name in this file, 
-the change log, and the `composer.json` file before continuing.
+Suspend lets you perform an unlimited number of operations on your data in a single pass.
+Double or triple your collections performance for free.
 
 ## Installation
 
 ## Usage
+
+```php
+suspend($data)
+    ->filter(/* ... */)
+    ->filter(/* ... */)
+    ->map(/* ... */)
+    ->map(/* ... */)
+    ->toArray(); // <-- All operations are suspended until you need the data
+```
