@@ -29,6 +29,12 @@
             alt="Follow @inxilpro on Twitter" 
         />
     </a>
+    <a href="https://twitter.com/DCoulbourne" target="_blank">
+        <img 
+            src="https://img.shields.io/twitter/follow/DCoulbourne?style=social" 
+            alt="Follow @DCoulbourne on Twitter" 
+        />
+    </a>
 </div>
 
 # Suspend
