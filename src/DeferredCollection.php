@@ -2,7 +2,6 @@
 
 namespace Glhd\Suspend;
 
-use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Collection;
@@ -10,6 +9,10 @@ use Illuminate\Support\Enumerable;
 use Illuminate\Support\Traits\ForwardsCalls;
 use JsonSerializable;
 use RuntimeException;
+use function transducers\comp as compose;
+use function transducers\filter;
+use function transducers\map;
+use function transducers\transduce;
 use Traversable;
 
 class DeferredCollection implements Enumerable
@@ -23,31 +26,22 @@ class DeferredCollection implements Enumerable
 	
 	protected array $operations = [];
 	
-	protected ?Closure $step = null;
-	
-	protected OperationFactory $factory;
-	
 	protected Collection $initial;
 	
 	/**
 	 * @param array|Enumerable|Arrayable|Jsonable|JsonSerializable|Traversable $source
 	 */
-	public function __construct($source, ?callable $step = null, Collection $initial = null, OperationFactory $factory = null)
+	public function __construct($source, Collection $initial = null)
 	{
-		$this->factory = $factory ?? app(OperationFactory::class);
-		
 		$this->source = $source;
-		$this->step = null === $step
-			? $this->factory->toCollection()
-			: Closure::fromCallable($step);
 		$this->initial = $initial ?? new Collection();
 	}
 	
 	public function execute(): Enumerable
 	{
 		if (null === $this->collection) {
-			$reducer = $this->factory->compose(...$this->operations);
-			$this->collection = collect($this->source)->reduce($reducer($this->step), $this->initial);
+			$reducer = compose(...$this->operations);
+			$this->collection = transduce($reducer, $this->step(), $this->source, $this->initial);
 			$this->operations = [];
 		}
 		
@@ -56,12 +50,12 @@ class DeferredCollection implements Enumerable
 	
 	public function map(callable $callback): self
 	{
-		return $this->addOperation($this->factory->map($callback));
+		return $this->addOperation(map($callback));
 	}
 	
 	public function filter(callable $callback = null): self
 	{
-		return $this->addOperation($this->factory->filter($callback));
+		return $this->addOperation(filter($callback));
 	}
 	
 	public function thread($name, $callback): ParallelOperations
@@ -76,6 +70,19 @@ class DeferredCollection implements Enumerable
 		$this->operations[] = $operation;
 		
 		return $this;
+	}
+	
+	protected function step(): array
+	{
+		return [
+			'init' => function() {
+				return new Collection();
+			},
+			'result' => 'transducers\identity',
+			'step' => function(Collection $result, $input) {
+				return $result->push($input);
+			},
+		];
 	}
 	
 	protected function throwIfAlreadyExecuted(): void
