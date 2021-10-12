@@ -7,6 +7,10 @@ use Glhd\Suspend\DeferredCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\LazyCollection;
+use function transducers\comp as compose;
+use function transducers\filter;
+use function transducers\map;
+use function transducers\transduce;
 
 class CollectionsBench
 {
@@ -63,6 +67,27 @@ class CollectionsBench
 		}
 		
 		$result->toArray();
+	}
+	
+	public function bench_mtdowling_transducers_package()
+	{
+		$xf = compose(
+			filter(fn($number) => 0 === $number % 2),
+			map(fn($number) => $number * 10),
+			filter(fn($number) => $number > 100)
+		);
+		
+		$step = [
+			'init' => function() {
+				return new Collection();
+			},
+			'result' => 'Transducers\identity',
+			'step' => function($result, $input) {
+				return $result->push($input);
+			},
+		];
+		
+		transduce($xf, $step, LazyCollection::range(1, 10000))->toArray();
 	}
 	
 	public function provideImplementations(): Generator
