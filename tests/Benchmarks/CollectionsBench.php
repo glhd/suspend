@@ -15,6 +15,22 @@ use function transducers\transduce;
 
 class CollectionsBench
 {
+	public function bench_iterating_models_base()
+	{
+		$this->getModels(10000)
+			->filter(fn(Model $model) => $model->id % 2 === 0)
+			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
+			->toArray();
+	}
+	
+	public function bench_iterating_models_suspend()
+	{
+		(new DeferredCollection($this->getModels(10000)))
+			->filter(fn(Model $model) => $model->id % 2 === 0)
+			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
+			->toArray();
+	}
+	
 	/** @ParamProviders({"provideImplementations"}) */
 	public function bench_filter_map_small_dataset(array $params)
 	{
@@ -45,22 +61,6 @@ class CollectionsBench
 			->filter(fn($number) => 0 === $number % 2)
 			->map(fn($number) => $number * 10)
 			->filter(fn($number) => $number > 100)
-			->toArray();
-	}
-	
-	public function bench_iterating_models_base()
-	{
-		$this->getModels(10000)
-			->filter(fn(Model $model) => $model->id % 2 === 0)
-			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
-			->toArray();
-	}
-	
-	public function bench_iterating_models_suspend()
-	{
-		(new DeferredCollection($this->getModels(10000)))
-			->filter(fn(Model $model) => $model->id % 2 === 0)
-			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
 			->toArray();
 	}
 	
@@ -143,6 +143,7 @@ class CollectionsBench
 				];
 				
 				yield new class($attributes) extends Model {
+					protected $guarded = [];
 				};
 			}
 		});
