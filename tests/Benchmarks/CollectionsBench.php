@@ -7,7 +7,6 @@ use Glhd\Suspend\DeferredCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\LazyCollection;
-use Illuminate\Support\Str;
 
 class CollectionsBench
 {
@@ -19,7 +18,6 @@ class CollectionsBench
 			->filter(fn($number) => 0 === $number % 2)
 			->map(fn($number) => $number * 10)
 			->filter(fn($number) => $number > 100)
-			->map(fn($number) => Str::contains("$number", ['2', '3', '4']))
 			->toArray();
 	}
 	
@@ -31,7 +29,6 @@ class CollectionsBench
 			->filter(fn($number) => 0 === $number % 2)
 			->map(fn($number) => $number * 10)
 			->filter(fn($number) => $number > 100)
-			->map(fn($number) => Str::contains("$number", ['2', '3', '4']))
 			->toArray();
 	}
 	
@@ -43,8 +40,29 @@ class CollectionsBench
 			->filter(fn($number) => 0 === $number % 2)
 			->map(fn($number) => $number * 10)
 			->filter(fn($number) => $number > 100)
-			->map(fn($number) => Str::contains("$number", ['2', '3', '4']))
 			->toArray();
+	}
+	
+	public function bench_foreach_loop()
+	{
+		$source = LazyCollection::range(1, 10000);
+		$result = new Collection();
+		
+		foreach ($source as $number) {
+			if (0 === $number % 2) {
+				continue;
+			}
+			
+			$number = $number * 10;
+			
+			if ($number <= 100) {
+				continue;
+			}
+			
+			$result->push($number);
+		}
+		
+		$result->toArray();
 	}
 	
 	public function provideImplementations(): Generator
