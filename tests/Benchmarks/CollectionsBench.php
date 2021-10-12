@@ -4,6 +4,7 @@ namespace Glhd\Suspend\Tests\Benchmarks;
 
 use Generator;
 use Glhd\Suspend\DeferredCollection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\LazyCollection;
@@ -44,6 +45,22 @@ class CollectionsBench
 			->filter(fn($number) => 0 === $number % 2)
 			->map(fn($number) => $number * 10)
 			->filter(fn($number) => $number > 100)
+			->toArray();
+	}
+	
+	public function bench_iterating_models_base()
+	{
+		$this->getModels(10000)
+			->filter(fn(Model $model) => $model->id % 2 === 0)
+			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
+			->toArray();
+	}
+	
+	public function bench_iterating_models_suspend()
+	{
+		suspend($this->getModels(10000))
+			->filter(fn(Model $model) => $model->id % 2 === 0)
+			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
 			->toArray();
 	}
 	
@@ -113,5 +130,21 @@ class CollectionsBench
 		}
 		
 		return $collection;
+	}
+	
+	protected function getModels($count = 1000): LazyCollection
+	{
+		return new LazyCollection(static function() use ($count) {
+			for ($i = 0; $i < $count; $i++) {
+				$attributes = [
+					'id' => $i,
+					'name' => "Chris #{$i}",
+					'email' => "chris-{$i}@mailinator.com",
+				];
+				
+				yield new class($attributes) extends Model {
+				};
+			}
+		});
 	}
 }
