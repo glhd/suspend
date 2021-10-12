@@ -9,8 +9,15 @@ class OperationFactory
 {
 	public function compose(callable ...$callbacks): Closure
 	{
-		return static fn(callable $initial) => collect($callbacks)
-			->reduce(static fn($result, $next) => $next($result), $initial);
+		$callbacks = array_reverse($callbacks);
+		
+		return static function($result) use ($callbacks) {
+			foreach ($callbacks as $callback) {
+				$result = $callback($result);
+			}
+			
+			return $result;
+		};
 	}
 	
 	public function filter(callable $predicate): Closure

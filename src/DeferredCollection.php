@@ -21,7 +21,7 @@ class DeferredCollection implements Enumerable
 	
 	protected ?Enumerable $collection = null;
 	
-	protected Collection $operations;
+	protected array $operations = [];
 	
 	protected ?Closure $step = null;
 	
@@ -35,7 +35,6 @@ class DeferredCollection implements Enumerable
 	public function __construct($source, ?callable $step = null, Collection $initial = null, OperationFactory $factory = null)
 	{
 		$this->factory = $factory ?? app(OperationFactory::class);
-		$this->operations = new Collection();
 		
 		$this->source = $source;
 		$this->step = null === $step
@@ -47,9 +46,9 @@ class DeferredCollection implements Enumerable
 	public function execute(): Enumerable
 	{
 		if (null === $this->collection) {
-			$reducer = $this->factory->compose(...$this->operations->all());
+			$reducer = $this->factory->compose(...$this->operations);
 			$this->collection = collect($this->source)->reduce($reducer($this->step), $this->initial);
-			$this->operations = new Collection();
+			$this->operations = [];
 		}
 		
 		return $this->collection;
@@ -74,7 +73,7 @@ class DeferredCollection implements Enumerable
 	{
 		$this->throwIfAlreadyExecuted();
 		
-		$this->operations->prepend($operation);
+		array_unshift($this->operations, $operation);
 		
 		return $this;
 	}
