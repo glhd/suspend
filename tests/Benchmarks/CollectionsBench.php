@@ -15,7 +15,7 @@ use function transducers\transduce;
 class CollectionsBench
 {
 	/** @ParamProviders({"provideImplementations"}) */
-	public function bench_filter_map_small_datased(array $params)
+	public function bench_filter_map_small_dataset(array $params)
 	{
 		[$source, $suspend] = $params;
 		$this->getCollection(100, $source, $suspend)
@@ -26,7 +26,7 @@ class CollectionsBench
 	}
 	
 	/** @ParamProviders({"provideImplementations"}) */
-	public function bench_filter_map_medium_datased(array $params)
+	public function bench_filter_map_medium_dataset(array $params)
 	{
 		[$source, $suspend] = $params;
 		$this->getCollection(1000, $source, $suspend)
@@ -37,7 +37,7 @@ class CollectionsBench
 	}
 	
 	/** @ParamProviders({"provideImplementations"}) */
-	public function bench_filter_map_large_datased(array $params)
+	public function bench_filter_map_large_dataset(array $params)
 	{
 		[$source, $suspend] = $params;
 		$this->getCollection(10000, $source, $suspend)
