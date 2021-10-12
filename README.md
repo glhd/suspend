@@ -1,8 +1,8 @@
 <div style="float: right;">
 	<a href="https://github.com/glhd/suspend/actions" target="_blank">
 		<img 
-			src="https://github.com/glhd/suspend/workflows/PHPUnit/badge.svg" 
-			alt="Build Status" 
+			src="https://github.com/glhd/suspend/workflows/Pest/badge.svg" 
+			alt="Test Status" 
 		/>
 	</a>
 	<a href="https://codeclimate.com/github/glhd/suspend/test_coverage" target="_blank">

@@ -3,6 +3,7 @@
 namespace Glhd\Suspend;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ForwardsCalls;
@@ -25,9 +26,7 @@ trait ForwardsToEnumerable
 	
 	public static function unwrap($value)
 	{
-		return $value instanceof Enumerable
-			? $value->all()
-			: $value;
+		return Collection::unwrap($value);
 	}
 	
 	public static function empty()
@@ -38,7 +37,7 @@ trait ForwardsToEnumerable
 	public static function times($number, callable $callback = null)
 	{
 		if ($number < 1) {
-			return new static();
+			return static::empty();
 		}
 		
 		return static::range(1, $number)

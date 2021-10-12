@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\LazyCollection;
+use Illuminate\Support\Str;
 use function transducers\comp as compose;
 use function transducers\filter;
 use function transducers\map;
@@ -19,14 +20,20 @@ class CollectionsBench
 	{
 		$this->getModels(10000)
 			->filter(fn(Model $model) => $model->id % 2 === 0)
+			->filter(fn(Model $model) => Str::contains($model->name, ['1', '2', '3']))
+			->filter(fn(Model $model) => Str::contains($model->email, ['2', '3', '4']))
+			->map(fn(Model $model) => $model->setAttribute('email', strtolower($model->email)))
 			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
 			->toArray();
 	}
 	
 	public function bench_iterating_models_suspend()
 	{
-		(new DeferredCollection($this->getModels(10000)))
+		DeferredCollection::make($this->getModels(10000))
 			->filter(fn(Model $model) => $model->id % 2 === 0)
+			->filter(fn(Model $model) => Str::contains($model->name, ['1', '2', '3']))
+			->filter(fn(Model $model) => Str::contains($model->email, ['2', '3', '4']))
+			->map(fn(Model $model) => $model->setAttribute('email', strtolower($model->email)))
 			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
 			->toArray();
 	}

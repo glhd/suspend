@@ -75,11 +75,13 @@ class DeferredCollection implements Enumerable
 	protected function step(): array
 	{
 		return [
-			'init' => function() {
+			'init' => static function() {
 				return new Collection();
 			},
-			'result' => 'transducers\identity',
-			'step' => function(Collection $result, $input) {
+			'result' => static function(Collection $result) {
+				return $result;
+			},
+			'step' => static function(Collection $result, $input) {
 				return $result->push($input);
 			},
 		];
