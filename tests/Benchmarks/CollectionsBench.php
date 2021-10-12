@@ -58,7 +58,7 @@ class CollectionsBench
 	
 	public function bench_iterating_models_suspend()
 	{
-		suspend($this->getModels(10000))
+		(new DeferredCollection($this->getModels(10000)))
 			->filter(fn(Model $model) => $model->id % 2 === 0)
 			->map(fn(Model $model) => "{$model->name} <{$model->email}>")
 			->toArray();
