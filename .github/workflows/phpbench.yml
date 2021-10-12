@@ -1,0 +1,42 @@
+name: PHPUnit
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, bcmath, intl, iconv
+          tools: composer:v2
+
+      - name: Register composer cache directory
+        id: composer-cache-files-dir
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            vendor
+            ${{ steps.composer-cache-files-dir.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        env:
+          COMPOSER_DISCARD_CHANGES: true
+        run: composer install --no-suggest --no-progress --no-interaction --prefer-dist
+
+      - name: Execute tests
+        run: vendor/bin/phpbench run
