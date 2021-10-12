@@ -11,8 +11,6 @@ trait ForwardsToEnumerable
 {
 	use ForwardsCalls;
 	
-	protected ?Enumerable $collection = null;
-	
 	public static function make($items = [])
 	{
 		return new static($items);
@@ -194,11 +192,6 @@ trait ForwardsToEnumerable
 		return $this->executeAndForward(Str::after(__METHOD__, '::'), func_get_args());
 	}
 	
-	public function filter(callable $callback = null)
-	{
-		return $this->executeAndForward(Str::after(__METHOD__, '::'), func_get_args());
-	}
-	
 	public function when($value, callable $callback, callable $default = null)
 	{
 		return $this->executeAndForward(Str::after(__METHOD__, '::'), func_get_args());
@@ -360,11 +353,6 @@ trait ForwardsToEnumerable
 	}
 	
 	public function last(callable $callback = null, $default = null)
-	{
-		return $this->executeAndForward(Str::after(__METHOD__, '::'), func_get_args());
-	}
-	
-	public function map(callable $callback)
 	{
 		return $this->executeAndForward(Str::after(__METHOD__, '::'), func_get_args());
 	}
