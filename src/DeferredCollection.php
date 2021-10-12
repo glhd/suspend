@@ -73,7 +73,7 @@ class DeferredCollection implements Enumerable
 	{
 		$this->throwIfAlreadyExecuted();
 		
-		array_unshift($this->operations, $operation);
+		$this->operations[] = $operation;
 		
 		return $this;
 	}
