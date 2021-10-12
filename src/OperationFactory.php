@@ -22,23 +22,37 @@ class OperationFactory
 	
 	public function filter(callable $predicate): Closure
 	{
-		return static fn(callable $step) => static fn($carry, $item) => $predicate($item)
-			? $step($carry, $item)
-			: $carry;
+		return static function(callable $step) use ($predicate) {
+			return static function($carry, $item) use ($predicate, $step) {
+				return $predicate($item)
+					? $step($carry, $item)
+					: $carry;
+			};
+		};
 	}
 	
 	public function map(callable $mutation): Closure
 	{
-		return static fn(callable $step) => static fn($carry, $item) => $step($carry, $mutation($item));
+		return static function(callable $step) use ($mutation) {
+			return static function($carry, $item) use ($step, $mutation) {
+				return $step($carry, $mutation($item));
+			};
+		};
 	}
 	
 	public function identity(): Closure
 	{
-		return static fn(callable $step) => static fn($carry, $item) => $step($carry, $item);
+		return static function(callable $step) {
+			return static function($carry, $item) use ($step) {
+				return $step($carry, $item);
+			};
+		};
 	}
 	
 	public function toCollection(): Closure
 	{
-		return static fn(Collection $collection, $item) => $collection->push($item);
+		return static function(Collection $collection, $item) {
+			return $collection->push($item);
+		};
 	}
 }
