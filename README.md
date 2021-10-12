@@ -40,7 +40,7 @@
 # Suspend
 
 Suspend lets you perform an unlimited number of operations on your data in a single pass.
-Double or triple your collections performance for free.
+Perform collection operations 1.5x–2x slower with a more complicated API!
 
 ## Installation
 
